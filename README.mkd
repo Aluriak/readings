@@ -1,0 +1,64 @@
+# Readings
+Search and aggregate things to read, directly from [Writing Prompts subreddit](https://www.reddit.com/r/WritingPrompts).
+
+To end-user, Writing Prompts subreddit's submissions are *topics*, and top-level comments are *stories*.
+
+This python code allow to automatically retrieves stories from reddit, and print them in the terminal or in the web browser.
+Further developpments should allow end users to send content to [pocket](https://getpocket.com/).
+
+
+## Installation
+In a python 3 [virtualenv](https://virtualenv.pypa.io/en/stable/):
+
+    pip install requirements.txt
+
+or
+
+    pip3 install requirements.txt
+
+depending of your environment.
+
+
+
+## Usage
+Currently, there is only CLI (terminal) and API (programming), as described in the following.
+
+### CLI
+Documentation:
+
+    python -m readings --help
+
+The CLI is quite limited compared to the API, but can fullfil basic job, like all 500+ scored stories in terminal:
+
+    python -m readings term --min-score=500
+
+
+### API
+There is not external doc for API. You can see it in action in the [main package file](readings/__main__.py),
+and read the source code, especially the part where [reader preferences are defined](readings/wrappers.py).
+
+
+
+
+## Features
+
+- [X] automatic search in Writing Prompts
+- [X] locally save already read stories
+- [ ] … using a sqlite database instead of json
+- [ ] save stories with a user note and tags
+- [X] basic CLI
+- [ ] wrap text when reading in terminal
+- [ ] export story
+    - [ ] pocket
+    - [ ] pdf
+    - [X] html (browser)
+    - [X] txt (terminal)
+- [ ] support reading configuration
+    - [X] minimal score/upvote (ratio) of proposed stories
+    - [ ] golded first
+    - [ ] gives topic before or after
+    - [X] topic order: follow the subreddit history or get the latest submitted (see time frame)
+    - [X] time frame: get stories of last hour/day/week
+- [ ] support both reddit API
+    - [X] [application](http://praw.readthedocs.io/en/latest/getting_started/authentication.html#installed-application), allowing anyone to use this code
+    - [ ] [script](http://praw.readthedocs.io/en/latest/getting_started/authentication.html#script-application), allowing registered users to react on the channel.
