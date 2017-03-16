@@ -22,6 +22,8 @@ def readings(reader:callable=term_reader, database:Database=Database(),
     Callback can return a new Preferences instance,
     or a new UserResult instance.
 
+    See readings.readers module for reader examples.
+
 
     """
     prefs = Preferences(**{**prefs._asdict(), **kwargs})

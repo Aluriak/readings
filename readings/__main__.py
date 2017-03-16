@@ -26,14 +26,8 @@ if __name__ == "__main__":
     from docopt import docopt
 
     args = docopt(__doc__, version=0.1)
-    print('ARGS:', args)
     age = args['--age']
     min_score = int(args['--min-score'])
-
-    # import time
-    # print(time.asctime(time.gmtime(Preferences.time.today)))
-    # print(time.asctime())
-    # exit()
 
     called = partial(readings, max_per_topic=10)
 
