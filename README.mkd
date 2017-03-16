@@ -7,6 +7,12 @@ This python code allow to automatically retrieves stories from reddit, and print
 Further developpments should allow end users to send content to [pocket](https://getpocket.com/).
 
 
+## Long-term goal
+Have a way to send automatically to my terminal (or my reader device if i'm using it) all a subset of stories of WP
+(involving a tree or an AI if it's friday or wednesday), on a daily basis, and tag them using text mining and summarization,
+allowing me to retrieve them quickly if necessary.
+
+
 
 ## Installation
 Readings is using [PRAW](http://praw.readthedocs.io/) to parse reddit, and [docopt](https://docopt.org) to parse CLI.
@@ -65,6 +71,7 @@ and read the source code, especially the part where [reader preferences are defi
     - [ ] gives topic before or after
     - [X] topic order: follow the subreddit history or get the latest submitted (see time frame)
     - [X] time frame: get stories of last hour/day/week
+    - [ ] subject limitation: need some text mining to filter in/out subjects
 - [ ] support both reddit API
     - [X] [application](http://praw.readthedocs.io/en/latest/getting_started/authentication.html#installed-application), allowing anyone to use this code
     - [ ] [script](http://praw.readthedocs.io/en/latest/getting_started/authentication.html#script-application), allowing registered users to react on the channel.
