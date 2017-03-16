@@ -7,7 +7,10 @@ This python code allow to automatically retrieves stories from reddit, and print
 Further developpments should allow end users to send content to [pocket](https://getpocket.com/).
 
 
+
 ## Installation
+Readings is using [PRAW](http://praw.readthedocs.io/) to parse reddit, and [docopt](https://docopt.org) to parse CLI.
+
 In a python 3 [virtualenv](https://virtualenv.pypa.io/en/stable/):
 
     pip install requirements.txt
@@ -17,6 +20,7 @@ or
     pip3 install requirements.txt
 
 depending of your environment.
+
 
 
 
@@ -48,11 +52,13 @@ and read the source code, especially the part where [reader preferences are defi
 - [ ] save stories with a user note and tags
 - [X] basic CLI
 - [ ] wrap text when reading in terminal
+- [ ] correct handling of user commands
 - [ ] export story
     - [ ] pocket
     - [ ] pdf
     - [X] html (browser)
     - [X] txt (terminal)
+- [ ] decoupling of stories collections and choice for user
 - [ ] support reading configuration
     - [X] minimal score/upvote (ratio) of proposed stories
     - [ ] golded first
