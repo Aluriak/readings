@@ -40,8 +40,9 @@ def stories(prefs:Preferences, database:Database, *, echo:bool=True):
     for subnum, submission in enumerate(submissions_generator):
         if echo:
             print('\rFound: {} submissions'.format(subnum), end='', flush=True)
-        if unvalid_submission(submission, prefs):
-            logger.info("Submission {} is unvalid.".format(submission.id))
+        unvalid_reason = unvalid_submission(submission, prefs)
+        if unvalid_reason:
+            logger.info("Submission {} is unvalid because {}".format(submission.id, unvalid_reason))
             continue
         topic = Topic.from_praw(submission)
         if topic.author in prefs.unwanted_authors:
@@ -52,8 +53,9 @@ def stories(prefs:Preferences, database:Database, *, echo:bool=True):
             if isinstance(comment, praw.models.MoreComments):
                 logger.info("Story {} is unreachable (MoreComment).".format(comment.id))
                 continue  # TODO: handle MoreComments objects properly
-            if unvalid_comment(comment, prefs):
-                logger.info("Story {} is unvalid.".format(comment.id))
+            unvalid_reason = unvalid_comment(comment, prefs)
+            if unvalid_reason:
+                logger.info("Story {} is unvalid because {}".format(comment.id, unvalid_reason))
                 continue
             story = Story.from_praw(comment, topic=topic)
             if database.already_read(story):
@@ -76,19 +78,38 @@ def stories(prefs:Preferences, database:Database, *, echo:bool=True):
                 break
 
 
-def unvalid_comment(comment, prefs:Preferences) -> bool:
-    """True if given comment/story is invalid according to given Preferences"""
-    return any((
-        comment.body.lower() == '[deleted]',
-        prefs.minimal_score > comment.score,
-    ))
+def unvalid_comment(comment, prefs:Preferences) -> False or str:
+    """Truthy if given comment/story is invalid according to given Preferences.
+
+    The returned value is False if comment is valid.
+    Else, it's a non-empty string that describes the problem.
+
+    """
+    char_size = sum(1 for c in comment.body if c.strip())
+    line_size = sum(1 for l in comment.body.splitlines() if l.strip())
+    return next(iter(reason for reason, unvalid in {
+        "Deleted comment": comment.body.lower() == '[deleted]',
+        "Not enough lines ({}/{})".format(line_size, prefs.min_line_number):
+            prefs.min_line_number > line_size,
+        "Not enough chars ({}/{})".format(char_size, prefs.min_char_number):
+            prefs.min_char_number > char_size,
+        "Low score ({}/{})".format(comment.score, prefs.minimal_score):
+            prefs.minimal_score > comment.score,
+    }.items() if unvalid), False)
 
 
-def unvalid_submission(submission, prefs:Preferences) -> bool:
-    """True if given submission/topic is invalid according to given Preferences"""
-    return any((
-        not submission.title.lower().startswith(Topic.WP_HEADER.lower()),
-        prefs.minimal_topic_upvote_ratio > float(submission.upvote_ratio),
-        prefs.minimal_topic_upvote > int(submission.ups),
-        prefs.timeframe > submission.created_utc,
-    ))
+def unvalid_submission(submission, prefs:Preferences) -> False or str:
+    """Truthy if given submission/topic is invalid according to given Preferences.
+
+    The returned value is False if submission is valid.
+    Else, it's a non-empty string that describes the problem.
+
+    """
+    return next(iter(reason for reason, unvalid in {
+        "Not a [WP]": not submission.title.lower().startswith(Topic.WP_HEADER.lower()),
+        "Low upvote ratio ({}/{})".format(submission.upvote_ratio, prefs.minimal_topic_upvote_ratio):
+            prefs.minimal_topic_upvote_ratio > float(submission.upvote_ratio),
+        "Low upvote number ({}/{})".format(submission.ups, prefs.minimal_topic_upvote):
+            prefs.minimal_topic_upvote > int(submission.ups),
+        "Not at the right time ({})".format(submission.created_utc): prefs.timeframe > submission.created_utc,
+    }.items() if unvalid), False)
