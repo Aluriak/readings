@@ -4,18 +4,15 @@
 
 import time
 import random
-import logging
 from collections import namedtuple
 
 import praw  # reddit API wrapper
 import praw.models
 
-from readings import Preferences, Story, Topic
+from readings import Preferences, Story, Topic, logger
 from readings.database import Database, NullDatabase
 from readings.wrappers import coroutine
 
-
-LOGGER = logging.getLogger()
 
 reddit = praw.Reddit(client_id='lN-QXLdQhwdmOg', client_secret=None,
                      user_agent='Comment Extraction (by /u/aluriak)', implicit=True)
@@ -42,36 +39,36 @@ def stories(prefs:Preferences, database:Database):
     #  yield story(topic) if prefs allowed it. Take account sent prefs.
     for submission in submissions_generator:
         if unvalid_submission(submission, prefs):
-            LOGGER.info("Submission {} is unvalid.".format(submission.id))
+            logger.info("Submission {} is unvalid.".format(submission.id))
             continue
         topic = Topic.from_praw(submission)
         if topic.author in prefs.unwanted_authors:
-            LOGGER.info("Submission {} have a non wanted author '{}'.".format(submission.id, topic.author))
+            logger.info("Submission {} have a non wanted author '{}'.".format(submission.id, topic.author))
             continue
         comments = submission.comments
         for num, comment in enumerate(comments, start=1):
             if isinstance(comment, praw.models.MoreComments):
-                LOGGER.info("Story {} is unreachable (MoreComment).".format(comment.id))
+                logger.info("Story {} is unreachable (MoreComment).".format(comment.id))
                 continue  # TODO: handle MoreComments objects properly
             if unvalid_comment(comment, prefs):
-                LOGGER.info("Story {} is unvalid.".format(comment.id))
+                logger.info("Story {} is unvalid.".format(comment.id))
                 continue
             story = Story.from_praw(comment, topic=topic)
             if database.already_read(story):
-                LOGGER.info("Story {} already read.".format(story.uid))
+                logger.info("Story {} already read.".format(story.uid))
                 continue
             if story.author in prefs.unwanted_authors:
-                LOGGER.info("Submission {} have a non wanted author '{}'.".format(submission.id, topic.author))
+                logger.info("Submission {} have a non wanted author '{}'.".format(submission.id, topic.author))
                 continue
             prefs = (yield Story.from_praw(comment)) or prefs
             if not isinstance(prefs, Preferences):
                 raise ValueError("Coroutine stories expect to receive Preferences instances, not " + repr(prefs))
             assert 0. <= prefs.topic_diversity <= 1., "invalid topic diversity ratio ({})".format(prefs.topic_diversity)
             if random.random() < prefs.topic_diversity:
-                LOGGER.info("Change of topic (diversity).")
+                logger.info("Change of topic (diversity).")
                 break
             if prefs.max_per_topic and num > int(prefs.max_per_topic):
-                LOGGER.info("Change of topic (max per topic reached).")
+                logger.info("Change of topic (max per topic reached).")
                 break
 
 

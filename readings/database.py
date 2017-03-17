@@ -4,7 +4,7 @@
 
 
 import json
-from readings import Story
+from readings import Story, logger
 
 
 DEFAULT_DB_FILE = 'data/database'
@@ -33,7 +33,7 @@ class Database:
     def commit(self):
         """Save modifications to file"""
         if self.dirty:
-            # LOGGER.info("New database: {}".format(self._db))
+            logger.debug("New database: {}".format(self._db))
             with open(self._db_name, 'w') as fd:
                 json.dump(self._db, fd)
             self.dirty = False
