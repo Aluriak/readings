@@ -47,4 +47,3 @@ if __name__ == "__main__":
 
     # call the resulting function with remaining options
     called(minimal_score=min_score)
-
