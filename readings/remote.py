@@ -20,7 +20,7 @@ reddit.read_only = True
 
 
 @coroutine
-def stories(prefs:Preferences, database:Database):
+def stories(prefs:Preferences, database:Database, *, echo:bool=True):
     """Coroutine browsing stories depending of received preferences.
 
     This code is awful.
@@ -37,7 +37,9 @@ def stories(prefs:Preferences, database:Database):
 
     # For each submission as topic, for each comment as story,
     #  yield story(topic) if prefs allowed it. Take account sent prefs.
-    for submission in submissions_generator:
+    for subnum, submission in enumerate(submissions_generator):
+        if echo:
+            print('\rFound: {} submissions'.format(subnum), end='', flush=True)
         if unvalid_submission(submission, prefs):
             logger.info("Submission {} is unvalid.".format(submission.id))
             continue
@@ -60,6 +62,8 @@ def stories(prefs:Preferences, database:Database):
             if story.author in prefs.unwanted_authors:
                 logger.info("Submission {} have a non wanted author '{}'.".format(submission.id, topic.author))
                 continue
+            if echo:
+                print()
             prefs = (yield Story.from_praw(comment)) or prefs
             if not isinstance(prefs, Preferences):
                 raise ValueError("Coroutine stories expect to receive Preferences instances, not " + repr(prefs))
