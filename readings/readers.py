@@ -5,6 +5,7 @@ with readings API.
 
 import shutil
 import tempfile
+import textwrap
 import webbrowser
 from readings import Story, Topic, UserResult
 
@@ -14,16 +15,25 @@ def boolean_user_input(text:str) -> bool:
     return 'n' not in input("<"+text+" [Y/n]>").strip().lower()
 
 
-def term_reader(story:Story, *, interactive:bool=True):
+def term_reader(story:Story, *, interactive:bool=True, text_width:int=70):
     """Print given story in terminal."""
-    WIDTH = shutil.get_terminal_size((80, 20)).columns
+    WIDTH = shutil.get_terminal_size((80, 42)).columns
+    margin = (WIDTH - text_width) // 2
+    wrapper = textwrap.TextWrapper(
+        width=margin+text_width,
+        initial_indent=' ' * margin,
+        subsequent_indent=' ' * margin,
+        break_on_hyphens=False,  # for performances
+    )
+
     print('#' * WIDTH)
     print(story.topic.text)
     print(' -' * (WIDTH//6))
     print('Proposed by ' + story.topic.author + ' the ' + story.sub_date)
     print('#' * WIDTH)
     print()
-    print(story.text)
+    for par in story.text.splitlines():
+        print(wrapper.fill(par))
     print()
     print()
     author = 'Written by ' + story.author + ' the ' + story.sub_date + ' '
