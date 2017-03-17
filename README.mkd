@@ -77,7 +77,7 @@ and read the source code, especially the part where [reader preferences are defi
     - [X] topic order: follow the subreddit history or get the latest submitted (see time frame)
     - [X] time frame: get stories of last hour/day/week
     - [ ] subject limitation: need some text mining to filter in/out subjects
-    - [ ] minimal size (in line/char)
+    - [X] minimal size (in line/char)
 - [ ] support both reddit API
     - [X] [application](http://praw.readthedocs.io/en/latest/getting_started/authentication.html#installed-application), allowing anyone to use this code
     - [ ] [script](http://praw.readthedocs.io/en/latest/getting_started/authentication.html#script-application), allowing registered users to react on the channel.
