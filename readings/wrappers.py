@@ -11,8 +11,8 @@ from readings import timeframe
 
 LINK_HEAD = 'https://reddit.com/'
 
-PreferencesBase = namedtuple('PreferencesBase', 'max_per_topic, topic_diversity, unwanted_authors, minimal_topic_upvote, minimal_topic_upvote_ratio, minimal_score, timeframe')
-PreferencesBase.__new__.__defaults__ = 10, 0.01, {'WritingPromptsRobot'}, 0, 0, 0, timeframe.today
+PreferencesBase = namedtuple('PreferencesBase', 'max_per_topic, topic_diversity, unwanted_authors, minimal_topic_upvote, minimal_topic_upvote_ratio, minimal_score, timeframe, min_line_number, min_char_number')
+PreferencesBase.__new__.__defaults__ = 10, 0.01, {'WritingPromptsRobot'}, 0, 0, 0, timeframe.today, 0, 0
 
 
 TopicBase = namedtuple('TopicBase', 'uid, text, author, upvote, upvote_ratio, gilded, sub_date')
